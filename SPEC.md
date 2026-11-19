@@ -22,6 +22,8 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 - Pemain pertama sampai ke kapal menang.
 - Jika pemasa tamat (bila diaktifkan), pemain dengan mata tertinggi menang.
 - Lava dan abu bergerak 1 petak setiap giliran ke arah kapal.
+- Pemain yang terkena lava atau abu kehilangan satu giliran. Power "selamatkan diri" mencegah kesan ini.
+- Anggaran tempoh permainan: 10 hingga 15 minit untuk 2 pemain, 25 hingga 35 minit untuk 4 pemain. Perlu disahkan melalui ujian main.
 - Petak power-up: 6 hingga 8, bilangan tetap, diletakkan rawak setiap permainan.
 - Warna setiap petak menentukan jenis soalan.
 
@@ -61,6 +63,11 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 ## Penyimpanan
 - Tiada simpanan permainan dalam MVP.
 - Hanya tetapan setup disimpan.
+
+## Pause
+- Menu pause tersedia semasa permainan. Pemasa berhenti.
+- Pemain boleh sambung semula dalam sesi yang sama.
+- Jika app ditutup, permainan hilang (sejajar dengan tiada simpanan).
 
 ## Visual
 - Asas arang gelap. Lava oren-merah untuk bahaya. Biru laut untuk kapal. Teks putih.
