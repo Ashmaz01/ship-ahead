@@ -1,0 +1,482 @@
+[
+ {
+  "id": "sci-001",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What do plants need from the sun to make food?",
+  "choices": [
+   "Light",
+   "Sand",
+   "Noise",
+   "Smoke"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-002",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which animal lays eggs?",
+  "choices": [
+   "Chicken",
+   "Cow",
+   "Cat",
+   "Goat"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-003",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What is ice made of?",
+  "choices": [
+   "Water",
+   "Salt",
+   "Sugar",
+   "Glass"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-004",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "How many legs does an insect have?",
+  "choices": [
+   "6",
+   "4",
+   "8",
+   "10"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-005",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What do we call melted rock that comes out of a volcano?",
+  "choices": [
+   "Lava",
+   "Granite",
+   "Coal",
+   "Sand"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-006",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "Which planet is closest to the Sun?",
+  "choices": [
+   "Mercury",
+   "Venus",
+   "Earth",
+   "Mars"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-007",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "Which gas do we breathe out?",
+  "choices": [
+   "Carbon dioxide",
+   "Oxygen",
+   "Helium",
+   "Hydrogen"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-008",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "Which part of a plant takes in water from the soil?",
+  "choices": [
+   "Roots",
+   "Leaves",
+   "Flowers",
+   "Seeds"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-009",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "What is melted rock called while it is still underground?",
+  "choices": [
+   "Magma",
+   "Lava",
+   "Basalt",
+   "Ash"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-010",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "Which layer of the Earth do we live on?",
+  "choices": [
+   "Crust",
+   "Mantle",
+   "Outer core",
+   "Inner core"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-011",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "At what temperature does water boil at sea level?",
+  "choices": [
+   "100°C",
+   "90°C",
+   "120°C",
+   "50°C"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "sci-012",
+  "subject": "science",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "Which organ pumps blood around the body?",
+  "choices": [
+   "Heart",
+   "Lungs",
+   "Liver",
+   "Kidneys"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-001",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "Which word is an animal?",
+  "choices": [
+   "Tiger",
+   "Table",
+   "Blue",
+   "Run"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-002",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What is the opposite of \"hot\"?",
+  "choices": [
+   "Cold",
+   "Warm",
+   "Big",
+   "Fast"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-003",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "Which word is a verb?",
+  "choices": [
+   "Swim",
+   "Happy",
+   "Island",
+   "Green"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-004",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What is the plural of \"child\"?",
+  "choices": [
+   "Children",
+   "Childs",
+   "Childes",
+   "Childen"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-005",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "Which word means \"very big\"?",
+  "choices": [
+   "Enormous",
+   "Tiny",
+   "Narrow",
+   "Fragile"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-006",
+  "subject": "english",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "Choose the correct sentence.",
+  "choices": [
+   "The boats were leaving the harbour.",
+   "The boats was leaving the harbour.",
+   "The boat were leaving the harbour.",
+   "The boats is leaving the harbour."
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "eng-f001",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "easy",
+  "prompt": "Fill the blank: I ___ a cat. (have / has)",
+  "answers": [
+   "have"
+  ]
+ },
+ {
+  "id": "eng-f002",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "easy",
+  "prompt": "Fill the blank with the missing letter: sh_p (a big boat)",
+  "answers": [
+   "i"
+  ]
+ },
+ {
+  "id": "eng-f003",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "medium",
+  "prompt": "Fill the blank: The ship ___ away yesterday. (sail)",
+  "answers": [
+   "sailed"
+  ]
+ },
+ {
+  "id": "eng-f004",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "medium",
+  "prompt": "Fill the blank: Mei is ___ than her brother. (tall)",
+  "answers": [
+   "taller"
+  ]
+ },
+ {
+  "id": "eng-f005",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "hard",
+  "prompt": "Fill the blank: The volcano erupted, ___ everyone ran to the boats. (so / but)",
+  "answers": [
+   "so"
+  ]
+ },
+ {
+  "id": "eng-f006",
+  "subject": "english",
+  "type": "fill",
+  "difficulty": "hard",
+  "prompt": "Fill the blank: Yesterday we ___ to the harbour. (run)",
+  "answers": [
+   "ran"
+  ]
+ },
+ {
+  "id": "ara-001",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What does this word mean?\nكِتَاب",
+  "choices": [
+   "Book",
+   "Pen",
+   "House",
+   "Water"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-002",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What does this word mean?\nقَلَم",
+  "choices": [
+   "Pen",
+   "Book",
+   "Door",
+   "Bread"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-003",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What does this word mean?\nبَيْت",
+  "choices": [
+   "House",
+   "School",
+   "Water",
+   "Cat"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-004",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "easy",
+  "prompt": "What does this word mean?\nمَاء",
+  "choices": [
+   "Water",
+   "Milk",
+   "Bread",
+   "Book"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-005",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What does this word mean?\nأُمّ",
+  "choices": [
+   "Mother",
+   "Father",
+   "Brother",
+   "Sister"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-006",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What does this word mean?\nأَب",
+  "choices": [
+   "Father",
+   "Mother",
+   "Teacher",
+   "Son"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-007",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What does this word mean?\nخُبْز",
+  "choices": [
+   "Bread",
+   "Rice",
+   "Milk",
+   "Apple"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-008",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "medium",
+  "prompt": "What does this word mean?\nقِطَّة",
+  "choices": [
+   "Cat",
+   "Dog",
+   "Bird",
+   "Fish"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-009",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "What does this word mean?\nمَدْرَسَة",
+  "choices": [
+   "School",
+   "Library",
+   "Mosque",
+   "Market"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-010",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "What does this word mean?\nعَيْن",
+  "choices": [
+   "Eye",
+   "Ear",
+   "Hand",
+   "Nose"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-011",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "What does this word mean?\nيَد",
+  "choices": [
+   "Hand",
+   "Foot",
+   "Head",
+   "Eye"
+  ],
+  "answerIndex": 0
+ },
+ {
+  "id": "ara-012",
+  "subject": "arabic",
+  "type": "mcq",
+  "difficulty": "hard",
+  "prompt": "What does this word mean?\nأَخ",
+  "choices": [
+   "Brother",
+   "Sister",
+   "Uncle",
+   "Friend"
+  ],
+  "answerIndex": 0
+ }
+]

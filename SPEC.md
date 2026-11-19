@@ -32,7 +32,7 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 ## Fuel
 - Pemain perlu kumpul 3 tong fuel sebelum boleh naik kapal.
 - Fuel didapati dari tiang fuel khas: mendarat di tiang tu dan jawab betul.
-- Belum diputuskan: apa jadi bila pemain sampai harbour tanpa cukup fuel (laluan satu arah, jadi tak boleh patah balik).
+- Pemain yang sampai harbour tanpa cukup fuel menunggu di jeti. Setiap giliran dia jawab satu soalan; betul = 1 fuel. Bila cukup 3, terus naik kapal. Lava terus bergerak sementara dia menunggu.
 
 ## Power-up
 - Tiga jenis:
