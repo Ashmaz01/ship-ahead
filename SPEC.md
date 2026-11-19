@@ -6,7 +6,7 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 
 ## Konsep
 - Game kuiz papan bertema gunung berapi. Pemain berlumba ke kapal untuk lari daripada lava dan abu.
-- App mobile dibina dengan Expo (React Native).
+- Engine: Phaser (web game, TypeScript + Vite), dibungkus jadi app Android/iOS dengan Capacitor. Boleh juga dimainkan di browser. Logik game (giliran, mata, lava, fuel) dalam modul biasa tanpa Phaser supaya boleh diuji tanpa browser.
 - Bahasa UI dan soalan: English. Bahasa Melayu ditambah kemudian dalam settings.
 
 ## Pemain dan giliran
@@ -28,6 +28,11 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 - Anggaran tempoh permainan: 10 hingga 15 minit untuk 2 pemain, 25 hingga 35 minit untuk 4 pemain. Perlu disahkan melalui ujian main.
 - Petak power-up: 6 hingga 8, bilangan tetap, diletakkan rawak setiap permainan.
 - Warna setiap petak menentukan jenis soalan.
+
+## Fuel
+- Pemain perlu kumpul 3 tong fuel sebelum boleh naik kapal.
+- Fuel didapati dari tiang fuel khas: mendarat di tiang tu dan jawab betul.
+- Belum diputuskan: apa jadi bila pemain sampai harbour tanpa cukup fuel (laluan satu arah, jadi tak boleh patah balik).
 
 ## Power-up
 - Tiga jenis:
@@ -92,3 +97,4 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 - Watak dengan kebolehan khas.
 - Simpan permainan.
 - Tema bencana lain.
+- Kedai gadget (syiling dari jawapan betul, beli power di kedai).
