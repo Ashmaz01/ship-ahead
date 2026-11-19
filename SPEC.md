@@ -17,7 +17,9 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
   3. Jika mendarat di petak soalan, jawab soalan.
 
 ## Papan
-- Gaya 2.5D isometrik: pulau dilukis dari sudut condong, dengan tiang-tiang berwarna sepanjang laluan. Dibina dengan 2D (SVG/Skia), boleh zoom dan scroll, kamera tidak berpusing. 3D sebenar boleh dipertimbangkan selepas MVP.
+- Papan 3D sebenar dengan three.js, gaya low-poly yang dijana dengan kod (tiada fail model). Suasana siang cerah tropika.
+- Kamera dekat yang ikut token pemain semasa, dengan butang untuk lihat seluruh pulau. Mini-map menunjukkan laluan, lava dan semua pemain.
+- Tiang tinggi dari tanah dengan ketinggian berbeza, anak panah di atas menunjuk arah laluan.
 - Laluan satu arah yang berpusing mengelilingi pulau, sekitar 40 hingga 50 tiang. Bermula dekat gunung berapi, berakhir di harbour dengan dua kapal.
 - Setiap map ada bentuk pulau dan laluan sendiri.
 - Ambil idea pulau dan tiang sahaja; rekaan, watak dan gadget tidak ditiru daripada Volcanic Panic.
@@ -88,6 +90,13 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
 - Format: 2 hingga 3 skrin teks dengan gambar statik. Boleh di-skip.
 - Dipaparkan sekali untuk setiap map. Pemain boleh tengok semula dari menu.
 - Teks cerita dalam English. Draf oleh saya, semakan oleh awak.
+
+## Masa permainan dan lawan komputer
+- Masa permainan boleh dipilih dalam setup (contoh 15 minit). Bila tamat, mata tertinggi menang.
+- Lawan Computer untuk main solo.
+
+## Soalan interaktif (selepas papan 3D)
+- 2 hingga 3 format interaktif baru, diilhamkan oleh "Times Machine" dan "Changing Numbers" dalam Volcanic Panic. Reka bentuk akan dibincang dulu.
 
 ## Di luar MVP (ditangguh)
 - Bahasa Melayu dalam settings.
