@@ -17,8 +17,10 @@ Diilhamkan daripada Numbers Up! Volcanic Panic, tetapi dengan papan dan sistem s
   3. Jika mendarat di petak soalan, jawab soalan.
 
 ## Papan
-- Grid 7 x 7.
-- Laluan berbentuk ular, satu arah, dari titik mula ke dua kapal di hujung papan.
+- Gaya 2.5D isometrik: pulau dilukis dari sudut condong, dengan tiang-tiang berwarna sepanjang laluan. Dibina dengan 2D (SVG/Skia), boleh zoom dan scroll, kamera tidak berpusing. 3D sebenar boleh dipertimbangkan selepas MVP.
+- Laluan satu arah yang berpusing mengelilingi pulau, sekitar 40 hingga 50 tiang. Bermula dekat gunung berapi, berakhir di harbour dengan dua kapal.
+- Setiap map ada bentuk pulau dan laluan sendiri.
+- Ambil idea pulau dan tiang sahaja; rekaan, watak dan gadget tidak ditiru daripada Volcanic Panic.
 - Pemain pertama sampai ke kapal menang.
 - Jika pemasa tamat (bila diaktifkan), pemain dengan mata tertinggi menang.
 - Lava dan abu bergerak 1 petak setiap giliran ke arah kapal.
