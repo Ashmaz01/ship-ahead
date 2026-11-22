@@ -9,13 +9,44 @@ import android.view.WindowInsets;
 import android.graphics.Insets;
 import android.webkit.*;
 import android.widget.*;
+import com.google.android.gms.ads.*;
 public final class GameActivity extends Activity {
     private static final String HOST = "ship-ahead-volcano-isle.expertmagpie5.chatgpt.site";
     private WebView game;
+    private LinearLayout root;
+    private AdView banner;
+    private boolean initialized;
+
+    private void resultBanner(boolean visible) {
+        if (!visible) {
+            if (banner != null) {
+                root.removeView(banner);
+                banner.destroy();
+                banner = null;
+            }
+            return;
+        }
+        if (banner != null || isFinishing() || isDestroyed()) return;
+        if (!initialized) {
+            MobileAds.setRequestConfiguration(new RequestConfiguration.Builder()
+                .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
+                .setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE)
+                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G).build());
+            MobileAds.initialize(this);
+            initialized = true;
+        }
+        banner = new AdView(this);
+        banner.setAdSize(AdSize.BANNER);
+        banner.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        LinearLayout.LayoutParams size = new LinearLayout.LayoutParams(-2,-2);
+        size.gravity = android.view.Gravity.CENTER_HORIZONTAL;
+        root.addView(banner,size);
+        banner.loadAd(new AdRequest.Builder().build());
+    }
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         setVolumeControlStream(android.media.AudioManager.STREAM_MUSIC);
-        LinearLayout root = new LinearLayout(this);
+        root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         if (Build.VERSION.SDK_INT >= 30) root.setOnApplyWindowInsetsListener((v, insets) -> {
             Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
@@ -23,6 +54,11 @@ public final class GameActivity extends Activity {
             return insets;
         });
         game = new WebView(this);
+        game.addJavascriptInterface(new Object() {
+            @JavascriptInterface public void setVisible(boolean visible) {
+                runOnUiThread(() -> resultBanner(visible));
+            }
+        }, "ResultBanner");
         Button retry = new Button(this);
         retry.setText("Connection lost · Tap to retry");
         retry.setVisibility(Button.GONE);
@@ -63,12 +99,14 @@ public final class GameActivity extends Activity {
                 if (r.isForMainFrame()) retry.setVisibility(Button.VISIBLE);
             }
             @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap icon) {
+                resultBanner(false);
                 retry.setVisibility(Button.GONE);
             }
         });
         if (state == null || game.restoreState(state) == null) game.loadUrl("https://"+HOST+"/");
     }
+    @Override protected void onDestroy() { resultBanner(false); super.onDestroy(); }
     @Override protected void onSaveInstanceState(Bundle state) { super.onSaveInstanceState(state); game.saveState(state); }
-    @Override protected void onPause() { game.onPause(); super.onPause(); }
-    @Override protected void onResume() { super.onResume(); game.onResume(); }
+    @Override protected void onPause() { if (banner != null) banner.pause(); game.onPause(); super.onPause(); }
+    @Override protected void onResume() { super.onResume(); game.onResume(); if (banner != null) banner.resume(); }
 }

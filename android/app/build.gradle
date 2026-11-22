@@ -7,7 +7,7 @@ android {
         minSdk 26
         targetSdk 36
         versionCode = 100 + (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
-        versionName '1.1'
+        versionName '1.2'
     }
     signingConfigs {
         if (System.getenv('UPLOAD_STORE_FILE')) {
@@ -47,3 +47,5 @@ def bundleGame = tasks.register('bundleGame', Sync) {
 }
 android.sourceSets.main.assets.srcDir(gameAssetsDir)
 tasks.named('preBuild').configure { dependsOn bundleGame }
+
+dependencies { implementation 'com.google.android.gms:play-services-ads:24.7.0' }

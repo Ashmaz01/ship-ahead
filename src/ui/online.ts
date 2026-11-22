@@ -1,10 +1,11 @@
+import { showFinale } from './finale';
 import { SCHOOL_LABEL, selectedBands } from '../rules/school';
 import type BoardScene from '../scenes/BoardScene';
 import type { GameEvent, GameState } from '../rules/game';
 import { POWER_LABEL } from '../rules/config';
 import { CREW } from './crew';
 import { avatar, esc } from './html';
-import { cue, unlockAudio, syncMusic, sound, volumeControls } from '../sound';
+import { unlockAudio, syncMusic, sound, volumeControls } from '../sound';
 
 interface Room {
   id:string; seat:number; rev:number; token?:string;
@@ -24,6 +25,7 @@ export function openOnline(o:Options){
   let room:Room|null=null, running=true, pending=false, error='', offset=0;
   let interval=0;
   function leave(){
+    window.ResultBanner?.setVisible(false);
     running=false;clearInterval(interval);
     history.replaceState({},'',location.pathname);layer.onclick=null;layer.onsubmit=null;o.exit();
   }
@@ -46,7 +48,7 @@ export function openOnline(o:Options){
             await board.play(room.events);
           }
           board.setup(room.game);
-          if(room.ended==='eruption' && !before?.ended)cue('eruption');
+
         }
         draw();
       }
@@ -83,9 +85,8 @@ export function openOnline(o:Options){
     }
     if(g.phase==='over'){
       o.conditions(room);
-      layer.innerHTML=`<section class="screen setup"><h1>${room.ended==='eruption'?'The volcano erupted!':'The ferry is away!'}</h1>
-      <ol class="standings">${room.ranks.map(x=>{const p=g.players[x.id];return `<li><span class="rank">${x.rank}</span>${avatar(p.color)}<b>${esc(p.name)}${p.boarded||(room!.ended==='eruption'&&x.rank<=2)?' · Escaped':''}</b><span>${p.points} pts</span></li>`}).join('')}</ol>
-      <button class="btn-primary" data-online="leave">Return to setup</button></section>`;return;
+      showFinale(layer, room.ranks.map(({id,rank})=>({player:g.players[id],rank})), '<button class="btn-primary" data-online="leave">Return to setup</button>');
+      return;
     }
     const p=g.players[g.current],mine=me===g.current,q=g.pending?.question;
     layer.innerHTML=`<div class="net-top">${avatar(p.color)}<strong>${esc(p.name)}’s turn</strong> · ${p.points} pts <button data-online="view">Map</button></div>

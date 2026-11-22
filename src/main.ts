@@ -1,12 +1,12 @@
 import { LEVELS, SCHOOL_LABEL, selectedBands, type Band, type SchoolLevel } from './rules/school';
 import { openOnline } from './ui/online';
-import ferryUrl from './assets/rescue-ferry.webp';
+import { showFinale } from './ui/finale';
 import { cue, score, sound, unlockAudio, pauseAudio, volumeControls } from './sound';
 import './assets/fonts/lilita-one/400.css';
 import './assets/fonts/atkinson-hyperlegible/400.css';
 import './assets/fonts/atkinson-hyperlegible/700.css';
 import './styles.css';
-import islandUrl from './assets/volcano.webp';
+
 import { CREW, crewArt, crewIndex } from './ui/crew';
 import Phaser from 'phaser';
 import bank from './data/questions.json';
@@ -231,6 +231,7 @@ function enterFromLink(){
   if(new URLSearchParams(location.search).has('room'))online();else showSetup();
 }
 function showSetup(): void {
+  window.ResultBanner?.setVisible(false);
   clearMatch();
   hud.hidden = true;
   stopTimer();
@@ -734,40 +735,16 @@ function showPause(): void {
 
 // ---------- game over ----------
 
-function showGameOver(events: GameEvent[]): void {
+function showGameOver(_events: GameEvent[]): void {
   const s = state!;
   stopTimer();
   hud.hidden = true;
-  const over = events.find((e) => e.type === 'gameOver') as Extract<GameEvent, { type: 'gameOver' }>;
-  const w = s.players[s.winnerId!];
-  const timed=finishReason==='timeExpired';
+  if (layer.querySelector('.finish-film, [aria-label="Final results"]')) return;
   clearMatch();
-  const order=standings(s);
-  if(timed)cue('eruption');
-  const ended = timed ? 'The volcano erupted!' : over?.reason==='boarded'?'The ferry is away!':'The lava reached the harbour.';
-  const rescued = order.filter(x => x.player.boarded || ((timed || over?.reason==='lavaReachedHarbour') && x.rank<=2));
-  const outcome=rescued.map(x=>esc(x.player.name)).join(' & ')+' escaped. '+order.filter(x=>x.rank===1).map(x=>esc(x.player.name)).join(' & ')+(order.filter(x=>x.rank===1).length>1?' share first place.':' takes first place.');
-  layer.innerHTML = `
-    <section class="screen" aria-labelledby="over-title">
-      <div class="over-art finale ${timed?'erupted':''}" style="background-image:url('${islandUrl}')">
-        ${timed?`<div class="eruption-plume" aria-hidden="true">${Array.from({length:15},(_,i)=>`<i style="--dx:${(i%5-2)*21}px;--dy:${-20-(i*17)%72}px;--delay:${(i%4)*.1}s"></i>`).join('')}</div>`:''}
-        <div class="escape-boat"><img src="${ferryUrl}" alt="Rescue ferry">${avatar(w.color,'rescued')}</div>
-      </div>
-      <div class="over-copy">
-        <h1 class="display" id="over-title">${ended}</h1><p>${outcome}</p>
-      </div>
-      <ol class="standings" aria-label="Final standings">${order.map(({player:o,rank}) => `
-        <li class="${rank === 1 ? 'first' : ''}"><span class="rank">${rank}</span>${avatar(o.color)}<b>${esc(o.name)}</b><span class="pts">${o.points} point${o.points === 1 ? '' : 's'}</span></li>`).join('')}
-      </ol>
-      <div class="over-foot">
-        <button class="btn-primary" data-act="again" data-autofocus>Play again</button>
-        <button class="btn-secondary" data-act="setup">Change setup</button>
-      </div>
-    </section>`;
-  announce(ended+' '+outcome);
+  showFinale(layer, standings(s), '<button class="btn-primary" data-act="again">Play again</button><button class="btn-secondary" data-act="setup">Change setup</button>');
   layer.onclick = (e) => {
     const act = (e.target as HTMLElement).closest('[data-act]')?.getAttribute('data-act');
-    if (act === 'again') startGame();
+    if (act === 'again') { window.ResultBanner?.setVisible(false); startGame(); }
     if (act === 'setup') showSetup();
   };
   focusFirst();
