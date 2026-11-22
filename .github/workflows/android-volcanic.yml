@@ -1,7 +1,10 @@
 name: Ship Ahead Android
 on:
   workflow_dispatch:
+  pull_request:
+    paths: ['android/**', '.github/workflows/android-volcanic.yml']
   push:
+    branches: [main]
     paths: ['android/**', '.github/workflows/android-volcanic.yml']
 permissions:
   contents: read
