@@ -48,4 +48,3 @@ def bundleGame = tasks.register('bundleGame', Sync) {
 android.sourceSets.main.assets.srcDir(gameAssetsDir)
 tasks.named('preBuild').configure { dependsOn bundleGame }
 
-dependencies { implementation 'com.google.android.gms:play-services-ads:24.7.0' }

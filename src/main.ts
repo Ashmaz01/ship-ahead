@@ -286,6 +286,7 @@ function showSetup(): void {
       </section>
       ${canStart ? '' : '<p class="hint" role="alert">Pick at least one question type.</p>'}
       <button class="btn-primary" data-act="start" ${canStart ? '' : 'disabled'}>Start game</button>
+      <p class="legal"><a href="https://shipahead.ashmaz.app/policy/" target="_blank" rel="noopener">Privacy policy</a></p>
     </section>`;
 
   const save = () => store(STORE, settings);
@@ -717,6 +718,7 @@ function showPause(): void {
       <button class="btn-primary" data-pause="resume">Resume</button>
       <button class="btn-secondary" data-pause="restart">Restart with same setup</button>
       <button class="btn-secondary" data-pause="setup">Change setup</button>
+      <p class="legal"><a href="https://shipahead.ashmaz.app/policy/" target="_blank" rel="noopener">Privacy policy</a></p>
     </div>`;
   const prev = document.activeElement as HTMLElement | null;
   wrap.addEventListener('click', (e) => {
