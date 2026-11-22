@@ -6,8 +6,8 @@ android {
         applicationId 'com.ashmaz.shipahead.volcanicmath'
         minSdk 26
         targetSdk 36
-        versionCode = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
-        versionName '1.0'
+        versionCode = 100 + (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+        versionName '1.2'
     }
     signingConfigs {
         if (System.getenv('UPLOAD_STORE_FILE')) {
@@ -21,3 +21,30 @@ android {
     }
     buildTypes { release { if (signingConfigs.findByName('upload')) signingConfig signingConfigs.upload } }
 }
+
+def gameRoot = rootProject.projectDir.parentFile
+def npmExecutable = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+def installGameDependencies = tasks.register('installGameDependencies', Exec) {
+    workingDir gameRoot
+    commandLine npmExecutable, 'ci'
+    inputs.files(new File(gameRoot, 'package-lock.json'), new File(gameRoot, 'package.json'))
+    outputs.dir(new File(gameRoot, 'node_modules'))
+}
+def buildGame = tasks.register('buildGame', Exec) {
+    dependsOn installGameDependencies
+    workingDir gameRoot
+    commandLine npmExecutable, 'run', 'build'
+    inputs.files(fileTree(gameRoot) {
+        include 'src/**', 'public/**', 'scripts/build-client.mjs', '*.html', '*.json', 'vite.config.ts'
+    })
+    outputs.dir(new File(gameRoot, 'dist'))
+}
+def gameAssetsDir = layout.buildDirectory.dir('generated/gameAssets')
+def bundleGame = tasks.register('bundleGame', Sync) {
+    dependsOn buildGame
+    from(new File(gameRoot, 'dist')) { exclude 'server/**', '.openai/**' }
+    into(gameAssetsDir.map { it.dir('game') })
+}
+android.sourceSets.main.assets.srcDir(gameAssetsDir)
+tasks.named('preBuild').configure { dependsOn bundleGame }
+
