@@ -1,0 +1,3 @@
+CREATE TABLE rooms (id TEXT PRIMARY KEY, revision INTEGER NOT NULL, body TEXT NOT NULL, expires INTEGER NOT NULL);
+--> statement-breakpoint
+CREATE TABLE presence (room TEXT NOT NULL, seat INTEGER NOT NULL, seen INTEGER NOT NULL, PRIMARY KEY(room, seat), FOREIGN KEY(room) REFERENCES rooms(id) ON DELETE CASCADE);
