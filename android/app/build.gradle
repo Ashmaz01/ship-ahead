@@ -1,0 +1,23 @@
+plugins { id 'com.android.application' version '8.10.1' }
+android {
+    namespace 'com.ashmaz.shipahead.volcanicmath'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'com.ashmaz.shipahead.volcanicmath'
+        minSdk 26
+        targetSdk 36
+        versionCode = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+        versionName '1.0'
+    }
+    signingConfigs {
+        if (System.getenv('UPLOAD_STORE_FILE')) {
+            upload {
+                storeFile file(System.getenv('UPLOAD_STORE_FILE'))
+                storePassword System.getenv('UPLOAD_STORE_PASSWORD')
+                keyAlias System.getenv('UPLOAD_KEY_ALIAS')
+                keyPassword System.getenv('UPLOAD_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes { release { if (signingConfigs.findByName('upload')) signingConfig signingConfigs.upload } }
+}
