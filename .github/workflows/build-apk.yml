@@ -31,3 +31,22 @@ jobs:
           name: Emberwake-Relay-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+      - name: Enable emulator acceleration
+        if: contains(github.event.head_commit.message, '[capture-ui]')
+        run: sudo chmod 666 /dev/kvm
+      - name: Capture portrait screens
+        if: contains(github.event.head_commit.message, '[capture-ui]')
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: default
+          profile: pixel_2
+          script: python3 .github/capture-ui.py
+      - name: Upload portrait previews
+        if: contains(github.event.head_commit.message, '[capture-ui]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: Emberwake-portrait-preview
+          path: preview/*.png
+          if-no-files-found: error
