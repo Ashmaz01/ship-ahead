@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['src/**', 'android/**', '.github/workflows/android-volcanic.yml']
   push:
-    branches: [main, fix/volcanic-online-lobby]
+    branches: [main, fix/online-host-and-name]
     paths: ['src/**', 'android/**', '.github/workflows/android-volcanic.yml']
 permissions:
   contents: read
@@ -52,3 +52,15 @@ jobs:
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+      - name: Verify live host and guest can enter the same room
+        shell: python
+        run: |
+          import json, urllib.request
+          base = "https://ship-ahead-volcano-isle.expertmagpie5.chatgpt.site/api/rooms"
+          def send(endpoint, payload):
+              req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json"})
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  return json.load(response)
+          host = send(base, {"action":"create","name":"Lobby QA"})
+          guest = send(base + "/" + host["id"], {"action":"join","name":"Guest QA"})
+          assert len(guest["members"]) == 2 and guest["seat"] == 1
