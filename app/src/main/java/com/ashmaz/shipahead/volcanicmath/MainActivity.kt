@@ -320,7 +320,8 @@ private fun Race.cpuStep():Int {
                         }
                         Text("◆  Fuel      ?  Math      +  Shop      ···  Ferry",color=gold,fontSize=12.sp)
                         Column(Modifier.fillMaxWidth().heightIn(max=220.dp).clip(RoundedCornerShape(16.dp)).background(panel).verticalScroll(rememberScrollState()).padding(horizontal=14.dp,vertical=8.dp)){
-                            Text(if(r.note.isBlank()) "${names[r.who]} · ${if(r.who==0) \"Your turn\" else \"CPU turn\"}" else r.note,color=gold,fontWeight=FontWeight.Bold)
+                            val turnLabel = if (r.who == 0) "Your turn" else names[r.who] + " · CPU turn"
+                            Text(r.note.ifBlank { turnLabel }, color=gold, fontWeight=FontWeight.Bold)
                             if(r.dice.isNotBlank()) Text("Dice: ${r.dice}     Steps left: ${r.steps}")
                             when(r.phase){
                                 Phase.Panorama,Phase.Zoom -> Text("From the reef to the starting pier…")
