@@ -230,6 +230,7 @@ function online(){
 function enterFromLink(){
   if(new URLSearchParams(location.search).has('room'))online();else showSetup();
 }
+let setupTab = 'Questions';
 function showSetup(): void {
   window.ResultBanner?.setVisible(false);
   clearMatch();
@@ -247,6 +248,8 @@ function showSetup(): void {
         </button>
       </header>
       <button class="btn-secondary" data-act="online">Play online</button>
+      <nav class="setup-tabs" aria-label="Game settings">${['Questions','Game','Players'].map(tab => `<button class="chip" data-act="setup-tab" data-v="${tab}" aria-pressed="${tab===setupTab}">${tab}</button>`).join('')}</nav>
+      <div class="setup-page" ${setupTab==='Questions'?'':'hidden'}>
       <section>
         <h2>School levels</h2>
         <div class="chips">${([...LEVELS,'random'] as SchoolLevel[]).map(s=>`<button class="chip" data-act="school" data-v="${s}" aria-pressed="${(s==='random'?settings.schoolLevels.length===4:settings.schoolLevels.includes(s))}">${SCHOOL_LABEL[s]}</button>`).join('')}</div>
@@ -261,13 +264,13 @@ function showSetup(): void {
         <div class="segmented">${(['easy', 'medium', 'hard'] as Difficulty[]).map((x) => `<button data-act="difficulty" data-v="${x}" aria-pressed="${settings.difficulty === x}">${x[0].toUpperCase() + x.slice(1)}</button>`).join('')}</div>
         <p class="hint">Right answer: ${d.points} point${d.points > 1 ? 's' : ''}. Wrong answer: back ${d.back} pillar${d.back > 1 ? 's' : ''}.</p>
       </section>
-      <label class="env-row">Eruption clock <select data-env="minutes">${[0,5,10,15].map(n=>`<option value="${n}" ${settings.matchMinutes===n?'selected':''}>${n?n+' min':'Off'}</option>`).join('')}</select></label>
+      </div><div class="setup-page" ${setupTab==='Game'?'':'hidden'}><label class="env-row">Eruption clock <select data-env="minutes">${[0,5,10,15].map(n=>`<option value="${n}" ${settings.matchMinutes===n?'selected':''}>${n?n+' min':'Off'}</option>`).join('')}</select></label>
       ${environmentOptions()}
       <label class="toggle-row">
         <span><strong>Question timer</strong><small>${d.seconds} seconds per question on ${settings.difficulty}</small></span>
         <span class="switch"><input type="checkbox" data-act="timer" ${settings.timer ? 'checked' : ''}><span class="track"></span><span class="thumb"></span></span>
       </label>
-      <section>
+      </div><div class="setup-page" ${setupTab==='Players'?'':'hidden'}><section>
         <div style="display:flex;align-items:center;justify-content:space-between">
           <h2>Players</h2>
           <div class="stepper">
@@ -284,6 +287,7 @@ function showSetup(): void {
           </div>`).join('')}
         </div>
       </section>
+      </div>
       ${canStart ? '' : '<p class="hint" role="alert">Pick at least one question type.</p>'}
       <button class="btn-primary" data-act="start" ${canStart ? '' : 'disabled'}>Start game</button>
       <p class="legal"><a href="https://shipahead.ashmaz.app/policy/" target="_blank" rel="noopener">Privacy policy</a></p>
@@ -297,6 +301,7 @@ function showSetup(): void {
     const v = el.dataset.v as string;
     const i = Number(el.dataset.i);
     switch (el.dataset.act) {
+      case 'setup-tab': setupTab = v; break;
       case 'online': save(); return online();
       case 'story': return showIntro(0);
       case 'school': {
