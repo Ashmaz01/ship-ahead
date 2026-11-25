@@ -1,6 +1,11 @@
 name: Ship Ahead Android
 on:
   workflow_dispatch:
+    inputs:
+      check_live_lobby:
+        description: Test two players against the public rooms service
+        type: boolean
+        default: false
   pull_request:
     paths: ['src/**', 'android/**', '.github/workflows/android-volcanic.yml']
   push:
@@ -53,14 +58,15 @@ jobs:
             android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
       - name: Verify live host and guest can enter the same room
+        if: github.event_name == 'workflow_dispatch' && inputs.check_live_lobby
         shell: python
         run: |
           import json, urllib.request
-          base = "https://ship-ahead-volcano-isle.expertmagpie5.chatgpt.site/api/rooms"
+          base = "https://rooms.ashmaz.app/api/rooms"
           def send(endpoint, payload):
               req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json"})
               with urllib.request.urlopen(req, timeout=20) as response:
                   return json.load(response)
-          host = send(base, {"action":"create","name":"Lobby QA"})
-          guest = send(base + "/" + host["id"], {"action":"join","name":"Guest QA"})
+          host = send(base, {"action":"create","name":"Lobby QA","color":"#2DD4BF","qtypes":["mcq"]})
+          guest = send(base + "/" + host["id"], {"action":"join","name":"Guest QA","color":"#60A5FA"})
           assert len(guest["members"]) == 2 and guest["seat"] == 1

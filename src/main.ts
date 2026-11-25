@@ -208,7 +208,7 @@ function online(){
   if (location.protocol === 'file:') {
     layer.innerHTML = `<section class="screen setup"><h1>Play online</h1>
       <p>Online rooms need an internet connection.</p>
-      <a class="btn-primary" href="https://ship-ahead-volcano-isle.expertmagpie5.chatgpt.site/?room=">Open online lobby</a>
+      <a class="btn-primary" href="https://rooms.ashmaz.app/?room=">Open online lobby</a>
       <button class="btn-secondary">Back to setup</button></section>`;
     layer.onclick = null;
     layer.querySelector('button')!.onclick = showSetup;

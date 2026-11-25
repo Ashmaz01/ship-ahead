@@ -10,7 +10,7 @@ import android.graphics.Insets;
 import android.webkit.*;
 import android.widget.*;
 public final class GameActivity extends Activity {
-    private static final String HOST = "ship-ahead-volcano-isle.expertmagpie5.chatgpt.site";
+    private static final String HOST = "rooms.ashmaz.app";
     private WebView game;
     private LinearLayout root;
 
