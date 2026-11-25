@@ -58,15 +58,19 @@ jobs:
             android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
       - name: Verify live host and guest can enter the same room
-        if: github.event_name == 'workflow_dispatch' && inputs.check_live_lobby
+        if: (github.event_name == 'workflow_dispatch' && inputs.check_live_lobby) || (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'online-host-and-name'))
         shell: python
         run: |
           import json, urllib.request
           base = "https://shipahead.ashmaz.app/api/rooms"
-          def send(endpoint, payload):
-              req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json"})
+          def send(endpoint, payload, token=""):
+              req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json","Origin":"https://shipahead.ashmaz.app","Authorization":"Bearer " + token})
               with urllib.request.urlopen(req, timeout=20) as response:
                   return json.load(response)
           host = send(base, {"action":"create","name":"Lobby QA","color":"#2DD4BF","qtypes":["mcq"]})
           guest = send(base + "/" + host["id"], {"action":"join","name":"Guest QA","color":"#60A5FA"})
           assert len(guest["members"]) == 2 and guest["seat"] == 1
+          start = send(base + "/" + host["id"], {"action":"start","rev":guest["rev"]}, host["token"])
+          assert len(start["game"]["players"]) == 2
+          snapshot = send(base + "/" + host["id"], {"action":"poll"}, guest["token"])
+          assert snapshot["rev"] == start["rev"]
