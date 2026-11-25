@@ -97,6 +97,14 @@ export default class BoardScene extends Phaser.Scene {
     this.frameBoard(0, true);
   }
 
+  async revealIsland(): Promise<void> {
+    this.overview = true;
+    this.frameBoard(0, true);
+    await this.wait(1100);
+    this.overview = false;
+    await this.wait(900);
+  }
+
   focusPlayer(id: number): void {
     this.activeId = id;
     this.lookAhead.set(0, 0);
