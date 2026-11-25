@@ -1,0 +1,9 @@
+[data-join] input,[data-join] select {
+  background: #36303d;
+  color: white;
+  -webkit-text-fill-color: white;
+  caret-color: #ffc23d;
+  color-scheme: dark;
+  border: 2px solid #756c7d;
+}
+[data-join] input::placeholder { color: #c7bfd1; -webkit-text-fill-color: #c7bfd1; }

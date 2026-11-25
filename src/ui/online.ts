@@ -1,3 +1,4 @@
+import './lobby.css';
 import { showFinale } from './finale';
 import { SCHOOL_LABEL, selectedBands } from '../rules/school';
 import type BoardScene from '../scenes/BoardScene';
