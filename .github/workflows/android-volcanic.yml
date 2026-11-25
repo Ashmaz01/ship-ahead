@@ -62,7 +62,7 @@ jobs:
         shell: python
         run: |
           import json, urllib.request
-          base = "https://rooms.ashmaz.app/api/rooms"
+          base = "https://shipahead.ashmaz.app/api/rooms"
           def send(endpoint, payload):
               req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json"})
               with urllib.request.urlopen(req, timeout=20) as response:

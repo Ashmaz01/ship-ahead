@@ -208,7 +208,7 @@ function online(){
   if (location.protocol === 'file:') {
     layer.innerHTML = `<section class="screen setup"><h1>Play online</h1>
       <p>Online rooms need an internet connection.</p>
-      <a class="btn-primary" href="https://rooms.ashmaz.app/?room=">Open online lobby</a>
+      <p>Open Play Online in the installed Android app to host or join a room.</p>
       <button class="btn-secondary">Back to setup</button></section>`;
     layer.onclick = null;
     layer.querySelector('button')!.onclick = showSetup;

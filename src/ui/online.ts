@@ -86,9 +86,9 @@ export function openOnline(o:Options){
     }
     const me=room.seat,g=room.game;
     if(!g){
-      const link=location.origin+location.pathname+'?room='+code;
+      const invite=location.hostname==='shipahead.ashmaz.app'?code:location.origin+location.pathname+'?room='+code;
       layer.innerHTML=`<section class="screen setup"><h1>Ferry crew</h1><h2>Room ${esc(code)}</h2><p>Math · ${selectedBands(room.settings.schoolLevels??room.settings.schoolLevel).map(b=>SCHOOL_LABEL[b]).join(' + ')}</p>
-      <label>Invite link <input readonly value="${esc(link)}"></label><button class="btn-secondary" data-online="share">Share invite</button>
+      <label>Invitation <input readonly value="${esc(invite)}"></label><button class="btn-secondary" data-online="share">Share invite</button>
       <div class="list">${room.members.map((m,i)=>`<div>${avatar(m.color)} ${esc(m.name)}${i===0?' · Host':''}</div>`).join('')}</div>
       ${me===0?`<button class="btn-primary" data-online="start" ${room.members.length<2?'disabled':''}>Start race</button>`:'<p>Waiting for the host to start.</p>'}
       ${status()}<button class="btn-secondary" data-online="leave">Leave room</button></section>`;return;
@@ -130,8 +130,10 @@ export function openOnline(o:Options){
     if(action==='leave')return leave();
     if(action==='view')return board.toggleView();
     if(action==='share'){
-      const url=location.href;
-      try{if(navigator.share)await navigator.share({title:'Join my Ship Ahead crew',url});else await navigator.clipboard.writeText(url);}
+      const text=location.hostname==='shipahead.ashmaz.app'
+        ? 'Open Ship Ahead → Play Online → Join and enter '+code
+        : location.href;
+      try{if(navigator.share)await navigator.share({title:'Join my Ship Ahead crew',text});else await navigator.clipboard.writeText(text);}
       catch{(layer.querySelector('input[readonly]') as HTMLInputElement)?.select();}
       return;
     }
