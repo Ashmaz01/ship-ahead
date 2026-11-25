@@ -41,7 +41,7 @@ const PLAYER_COLORS = CREW.map((member): string => member.color);
 
 const QTYPES: QuestionType[] = ['mcq', 'fill', 'pattern', 'word'];
 const STORE = 'shipahead.settings';
-const INTRO_SEEN = 'shipahead.pixelVoyageSeen';
+
 
 function store<T>(key: string, value?: T): T | null {
   try {
@@ -163,7 +163,7 @@ const scenes = [
   { clip:'beacon', title:'At the summit,', line:'the mechanic opens the kit and fixes a loose wire. The beacon shines again. Then the ground shakes and ash rises from the crater.', dialogue:'Captain, over the radio: “Back to the jetty, crew! Two boats are waiting!”' },
 ];
 let sceneTimers: number[] = [];
-function showIntro(page = 0): void {
+function showIntro(page = 1, done: () => void = startGame): void {
   sceneTimers.forEach(clearTimeout);
   sceneTimers = [];
   hud.hidden = true;
@@ -176,7 +176,7 @@ function showIntro(page = 0): void {
       <div class="film-copy">
         <h1 class="display">${scene?.title || 'The Beacon has gone dark…'}</h1>
         ${scene?`<p>${scene.line}</p><blockquote>${scene.dialogue}</blockquote>`:''}
-        <button class="btn-primary" data-act="advance" data-autofocus>${page===0?'Begin story':page<scenes.length?'Continue':'Set up game'}</button>
+        <button class="btn-primary" data-act="advance" data-autofocus>${page===0?'Begin story':page<scenes.length?'Continue':'Enter island'}</button>
       </div>
     </section>`;
   if(scene){
@@ -196,8 +196,8 @@ function showIntro(page = 0): void {
   layer.onclick=e=>{
     const act=(e.target as Element).closest('[data-act]')?.getAttribute('data-act');
     if(act==='skip'||(act==='advance'&&page===scenes.length)){
-      sceneTimers.forEach(clearTimeout);sceneTimers=[];store(INTRO_SEEN,true);enterFromLink();
-    }else if(act==='advance')showIntro(page+1);
+      sceneTimers.forEach(clearTimeout);sceneTimers=[];layer.onclick = null; done();
+    }else if(act==='advance')showIntro(page+1, done);
   };
   focusFirst();
 }
@@ -215,7 +215,7 @@ function online(){
     hud.hidden = true;
     return;
   }
-  openOnline({board,layer,hud,settings,dice:showDice,exit:showSetup,conditions:room=>{
+  openOnline({board,layer,hud,settings,dice:showDice,exit:showHome,conditions:room=>{
     if (!room.game || room.game.phase==='over') { clearMatch(); return; }
     state=room.game;
     const remaining=room.deadline-room.serverNow;
@@ -227,9 +227,21 @@ function online(){
     settings=local;
   }});
 }
-function enterFromLink(){
-  if(new URLSearchParams(location.search).has('room'))online();else showSetup();
+function showHome(): void {
+  hud.hidden = true;
+  layer.innerHTML = `<section class="screen game-home">
+    <h1 class="display">Ship Ahead<span>Volcanic (Math)</span></h1>
+    <button class="btn-primary" data-local>Start Game</button>
+    <button class="btn-secondary" data-network>Play Online</button>
+  </section>`;
+  layer.onclick = null;
+  layer.querySelector<HTMLButtonElement>('[data-local]')!.onclick = showSetup;
+  layer.querySelector<HTMLButtonElement>('[data-network]')!.onclick = online;
 }
+function enterFromLink(){
+  if(new URLSearchParams(location.search).has('room'))online();else showHome();
+}
+let setupTab = 'Questions';
 function showSetup(): void {
   window.ResultBanner?.setVisible(false);
   clearMatch();
@@ -246,7 +258,9 @@ function showSetup(): void {
           Volcano Isle
         </button>
       </header>
-      <button class="btn-secondary" data-act="online">Play online</button>
+      <nav class="setup-tabs"><button class="chip" data-act="home">Home</button><button class="chip" data-act="online">Play online</button></nav>
+      <nav class="setup-tabs" aria-label="Game settings">${['Questions','Game','Players'].map(tab => `<button class="chip" data-act="setup-tab" data-v="${tab}" aria-pressed="${tab===setupTab}">${tab}</button>`).join('')}</nav>
+      <div class="setup-page" ${setupTab==='Questions'?'':'hidden'}>
       <section>
         <h2>School levels</h2>
         <div class="chips">${([...LEVELS,'random'] as SchoolLevel[]).map(s=>`<button class="chip" data-act="school" data-v="${s}" aria-pressed="${(s==='random'?settings.schoolLevels.length===4:settings.schoolLevels.includes(s))}">${SCHOOL_LABEL[s]}</button>`).join('')}</div>
@@ -261,13 +275,13 @@ function showSetup(): void {
         <div class="segmented">${(['easy', 'medium', 'hard'] as Difficulty[]).map((x) => `<button data-act="difficulty" data-v="${x}" aria-pressed="${settings.difficulty === x}">${x[0].toUpperCase() + x.slice(1)}</button>`).join('')}</div>
         <p class="hint">Right answer: ${d.points} point${d.points > 1 ? 's' : ''}. Wrong answer: back ${d.back} pillar${d.back > 1 ? 's' : ''}.</p>
       </section>
-      <label class="env-row">Eruption clock <select data-env="minutes">${[0,5,10,15].map(n=>`<option value="${n}" ${settings.matchMinutes===n?'selected':''}>${n?n+' min':'Off'}</option>`).join('')}</select></label>
+      </div><div class="setup-page" ${setupTab==='Game'?'':'hidden'}><label class="env-row">Eruption clock <select data-env="minutes">${[0,5,10,15].map(n=>`<option value="${n}" ${settings.matchMinutes===n?'selected':''}>${n?n+' min':'Off'}</option>`).join('')}</select></label>
       ${environmentOptions()}
       <label class="toggle-row">
         <span><strong>Question timer</strong><small>${d.seconds} seconds per question on ${settings.difficulty}</small></span>
         <span class="switch"><input type="checkbox" data-act="timer" ${settings.timer ? 'checked' : ''}><span class="track"></span><span class="thumb"></span></span>
       </label>
-      <section>
+      </div><div class="setup-page" ${setupTab==='Players'?'':'hidden'}><section>
         <div style="display:flex;align-items:center;justify-content:space-between">
           <h2>Players</h2>
           <div class="stepper">
@@ -284,6 +298,7 @@ function showSetup(): void {
           </div>`).join('')}
         </div>
       </section>
+      </div>
       ${canStart ? '' : '<p class="hint" role="alert">Pick at least one question type.</p>'}
       <button class="btn-primary" data-act="start" ${canStart ? '' : 'disabled'}>Start game</button>
       <p class="legal"><a href="https://shipahead.ashmaz.app/policy/" target="_blank" rel="noopener">Privacy policy</a></p>
@@ -297,8 +312,10 @@ function showSetup(): void {
     const v = el.dataset.v as string;
     const i = Number(el.dataset.i);
     switch (el.dataset.act) {
+      case 'setup-tab': setupTab = v; break;
       case 'online': save(); return online();
-      case 'story': return showIntro(0);
+      case 'story': return showIntro(1, showSetup);
+      case 'home': return showHome();
       case 'school': {
         if(v==='random')settings.schoolLevels=[...LEVELS];
         else if(LEVELS.includes(v as Band)){
@@ -333,7 +350,7 @@ function showSetup(): void {
         }
         break;
       }
-      case 'start': save(); return startGame();
+      case 'start': save(); return showIntro();
       default: return;
     }
     save();
@@ -356,7 +373,7 @@ function showSetup(): void {
 
 // ---------- game ----------
 
-function startGame(): void {
+async function startGame(): Promise<void> {
   const players = settings.players.map((p, i) => ({ name: p.name.trim() || `Player ${i + 1}`, color: p.color }));
   state = createGame({ ...settings, players, seed: Date.now() }, bank as Question[]);
 
@@ -364,7 +381,10 @@ function startGame(): void {
   if(Array.isArray(history))state.used=new Set(history.slice(-100));
   clearMatch();finishReason='';paused=false;pausedAt=0;
   unlockAudio();Object.assign(sound,{music:settings.music,effects:settings.effects});
+  layer.innerHTML = '';
+  hud.hidden = true;
   board.setup(state);
+  await board.revealIsland();
   deadline=performance.now()+settings.matchMinutes*60000;
   nextBeat=0;beat=0;nextThunder=performance.now()+3500;
   sky.hidden=false;
@@ -773,8 +793,7 @@ async function boot(): Promise<void> {
   Object.assign(window, { game, ship: { get state() { return state; }, render: () => state && renderHud() } });
   game.events.once('board-ready', () => {
     board = game.scene.getScene('board') as BoardScene;
-    if (store<boolean>(INTRO_SEEN)) enterFromLink();
-    else showIntro(0);
+    enterFromLink();
   });
 }
 

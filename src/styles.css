@@ -78,7 +78,7 @@ h1, h2, h3, p { margin: 0; }
 .intro-foot .btn-primary { width: auto; padding: 0 30px; height: 56px; font-size: 22px; }
 
 /* Setup */
-.setup { padding: 18px 20px 22px; gap: 16px; overflow-y: auto; }
+.setup { padding: 18px 20px 22px; gap: 16px; overflow: hidden; }
 .setup header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .setup h1 { font-size: 30px; }
 .map-chip { height: 32px; padding: 0 12px; border-radius: 16px; background: #3a3242; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--lava-text); border: 0; }
@@ -255,7 +255,7 @@ h1, h2, h3, p { margin: 0; }
 @media(prefers-reduced-motion:reduce){.eruption-plume{display:none}}
 .net-top,.net-panel{position:absolute;left:12px;right:12px;padding:14px;background:#182430f5;border-radius:18px;color:white;pointer-events:auto}
 .net-top{top:64px;display:flex;align-items:center;gap:7px}.net-top .avatar{width:36px;height:36px}
-.net-panel{bottom:8px;max-height:54%;overflow:auto}.net-panel h2{font-size:20px;margin:4px 0 12px}
+.net-panel{bottom:8px;max-height:90%;overflow:hidden}.net-panel h2{font-size:20px;margin:4px 0 12px}
 .net-panel button,.net-top button,.net-panel select,[data-join] input,[data-join] select,.net-panel input:not([type=checkbox]){min-height:44px;padding:8px;border-radius:10px}
 .net-panel button{margin:3px;color:white;background:#304458}.net-panel button:disabled{opacity:.7}
 .net-panel .btn-primary{color:#222;background:#ffc23d}.net-panel details{margin-top:9px}.net-panel [data-status]:empty{display:none}
@@ -316,3 +316,14 @@ h1, h2, h3, p { margin: 0; }
 
 .legal { text-align: center; font-size: 14px; margin: 4px 0 0; }
 .legal a { color: var(--soft, #e4dfea); }
+
+html, body { overscroll-behavior: none; touch-action: none; }
+.setup-tabs { display: flex; gap: 6px; }
+.setup-page { display: grid; gap: 10px; }
+.setup:has(.setup-tabs) { gap: 8px; padding: 12px 16px; }
+.setup:has(.setup-tabs) h1 { font-size: 24px; }
+
+.game-home { justify-content: flex-end; padding: 32px 24px 48px; gap: 12px;
+  background: linear-gradient(0deg,#142933 7%,transparent 78%), url('./assets/volcano.webp') center / cover; }
+.game-home h1 { color: white; font-size: 56px; line-height: 1; margin-bottom: 16px; text-shadow: 0 2px 6px #16232a; }
+.game-home h1 span { display:block; color:#ffe39d; font-size:24px; margin-top:8px; }
