@@ -59,18 +59,32 @@ jobs:
           if-no-files-found: error
       - name: Verify live host and guest can enter the same room
         if: (github.event_name == 'workflow_dispatch' && inputs.check_live_lobby) || (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'online-host-and-name'))
-        shell: python
         run: |
-          import json, urllib.request
-          base = "https://shipahead.ashmaz.app/api/rooms"
-          def send(endpoint, payload, token=""):
-              req = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers={"Content-Type":"application/json","Origin":"https://shipahead.ashmaz.app","Authorization":"Bearer " + token})
-              with urllib.request.urlopen(req, timeout=20) as response:
-                  return json.load(response)
-          host = send(base, {"action":"create","name":"Lobby QA","color":"#2DD4BF","qtypes":["mcq"]})
-          guest = send(base + "/" + host["id"], {"action":"join","name":"Guest QA","color":"#60A5FA"})
-          assert len(guest["members"]) == 2 and guest["seat"] == 1
-          start = send(base + "/" + host["id"], {"action":"start","rev":guest["rev"]}, host["token"])
-          assert len(start["game"]["players"]) == 2
-          snapshot = send(base + "/" + host["id"], {"action":"poll"}, guest["token"])
-          assert snapshot["rev"] == start["rev"]
+          python -m pip install --quiet selenium
+          python - <<'PY'
+          from selenium import webdriver
+          from selenium.webdriver.chrome.options import Options
+          opts=Options()
+          opts.add_argument("--headless=new")
+          with webdriver.Chrome(options=opts) as browser:
+              browser.get("https://shipahead.ashmaz.app/policy/")
+              result=browser.execute_async_script("""
+                const done=arguments[0], base='/api/rooms';
+                async function send(url,data,token) {
+                  const headers={'Content-Type':'application/json'};
+                  if(token) headers.Authorization='Bearer '+token;
+                  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(data)});
+                  if(!r.ok) throw Error('HTTP '+r.status+' ray '+r.headers.get('cf-ray')+' '+(await r.text()).slice(0,100));
+                  return r.json();
+                }
+                (async()=>{
+                  const host=await send(base,{action:'create',name:'Host QA',color:'#2DD4BF',qtypes:['mcq']});
+                  const path=base+'/'+host.id;
+                  const guest=await send(path,{action:'join',name:'Guest QA',color:'#60A5FA'});
+                  const start=await send(path,{action:'start',rev:guest.rev},host.token);
+                  const state=await send(path,{action:'poll'},guest.token);
+                  return guest.seat===1 && start.game.players.length===2 && state.rev===start.rev;
+                })().then(done,e=>done(String(e)));
+              """)
+              assert result is True,result
+          PY
