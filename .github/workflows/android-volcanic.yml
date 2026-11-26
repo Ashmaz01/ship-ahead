@@ -1,11 +1,16 @@
 name: Ship Ahead Android
 on:
   workflow_dispatch:
+    inputs:
+      check_live_lobby:
+        description: Test two players against the public rooms service
+        type: boolean
+        default: false
   pull_request:
-    paths: ['android/**', '.github/workflows/android-volcanic.yml']
+    paths: ['src/**', 'android/**', '.github/workflows/android-volcanic.yml']
   push:
-    branches: [main]
-    paths: ['android/**', '.github/workflows/android-volcanic.yml']
+    branches: [main, fix/online-host-and-name]
+    paths: ['src/**', 'android/**', '.github/workflows/android-volcanic.yml']
 permissions:
   contents: read
 jobs:
@@ -52,3 +57,53 @@ jobs:
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+      - name: Verify live host and guest can enter the same room
+        if: (github.event_name == 'workflow_dispatch' && inputs.check_live_lobby) || (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'online-host-and-name'))
+        run: |
+          python -m pip install --quiet selenium
+          python - <<'PY'
+          from selenium import webdriver
+          from selenium.webdriver.chrome.options import Options
+          opts=Options()
+          opts.add_argument("--headless=new")
+          with webdriver.Chrome(options=opts) as browser:
+              from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+              from functools import partial
+              from threading import Thread
+              from selenium.webdriver.common.by import By
+              from selenium.webdriver.support.ui import WebDriverWait
+              server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory="dist"))
+              Thread(target=server.serve_forever, daemon=True).start()
+              for width, height in [(320, 568), (360, 740), (412, 892)]:
+                  browser.execute_cdp_cmd("Emulation.setDeviceMetricsOverride", dict(width=width, height=height, deviceScaleFactor=3, mobile=True))
+                  browser.get(f"http://127.0.0.1:{server.server_port}/")
+                  WebDriverWait(browser, 30).until(lambda d: d.find_element(By.CSS_SELECTOR,"[data-local]")).click()
+                  assert browser.execute_script("""
+                    const viewport = visualViewport;
+                    return ['#stage','.setup h1','[data-act=start]'].every(sel=>{
+                      const box=document.querySelector(sel).getBoundingClientRect();
+                      return box.width>0 && box.left>=-1 && box.top>=-1 && box.right<=viewport.width+1 && box.bottom<=viewport.height+1;
+                    });
+                  """), (width,height)
+              server.shutdown()
+              browser.get("https://shipahead.ashmaz.app/policy/")
+              result=browser.execute_async_script("""
+                const done=arguments[0], base='/api/rooms';
+                async function send(url,data,token) {
+                  const headers={'Content-Type':'application/json'};
+                  if(token) headers.Authorization='Bearer '+token;
+                  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(data)});
+                  if(!r.ok) throw Error('HTTP '+r.status+' ray '+r.headers.get('cf-ray')+' '+(await r.text()).slice(0,100));
+                  return r.json();
+                }
+                (async()=>{
+                  const host=await send(base,{action:'create',name:'Host QA',color:'#2DD4BF',qtypes:['mcq']});
+                  const path=base+'/'+host.id;
+                  const guest=await send(path,{action:'join',name:'Guest QA',color:'#60A5FA'});
+                  const start=await send(path,{action:'start',rev:guest.rev},host.token);
+                  const state=await send(path,{action:'poll'},guest.token);
+                  return guest.seat===1 && start.game.players.length===2 && state.rev===start.rev;
+                })().then(done,e=>done(String(e)));
+              """)
+              assert result is True,result
+          PY

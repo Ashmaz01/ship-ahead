@@ -10,7 +10,7 @@ import android.graphics.Insets;
 import android.webkit.*;
 import android.widget.*;
 public final class GameActivity extends Activity {
-    private static final String HOST = "ship-ahead-volcano-isle.expertmagpie5.chatgpt.site";
+    private static final String HOST = "shipahead.ashmaz.app";
     private WebView game;
     private LinearLayout root;
 
@@ -25,6 +25,7 @@ public final class GameActivity extends Activity {
             return insets;
         });
         game = new WebView(this);
+        game.getSettings().setUseWideViewPort(true);
         game.getSettings().setSupportZoom(false);
         game.getSettings().setBuiltInZoomControls(false);
         game.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
@@ -46,7 +47,7 @@ public final class GameActivity extends Activity {
                 Uri uri = request.getUrl();
                 if (!"https".equals(uri.getScheme()) || !HOST.equals(uri.getAuthority())) return null;
                 String path = uri.getPath();
-                if (path == null || path.startsWith("/api/")) return null;
+                if (path == null || path.startsWith("/api/") || path.startsWith("/policy/")) return null;
                 String asset = "/".equals(path) ? "index.html" : path.substring(1);
                 if (!asset.matches("[A-Za-z0-9_./-]+") || asset.contains("..")) return missingAsset();
                 try {
@@ -65,7 +66,7 @@ public final class GameActivity extends Activity {
             }
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest r) {
                 Uri url = r.getUrl();
-                if ("https".equals(url.getScheme()) && HOST.equals(url.getHost())) return false;
+                if ("https".equals(url.getScheme()) && HOST.equals(url.getHost()) && !url.getPath().startsWith("/policy/")) return false;
                 // Other https links, such as the privacy policy, open in the phone's browser.
                 if ("https".equals(url.getScheme())) {
                     try { startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW, url)); }

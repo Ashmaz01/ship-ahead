@@ -1,3 +1,4 @@
+import './lobby.css';
 import { showFinale } from './finale';
 import { SCHOOL_LABEL, selectedBands } from '../rules/school';
 import type BoardScene from '../scenes/BoardScene';
@@ -32,9 +33,16 @@ export function openOnline(o:Options){
   async function send(action:string,extra:Record<string,unknown>={}){
     if(pending||!running)return;
     pending=true;
+    const entry=layer.querySelector<HTMLFormElement>('[data-join]');
+    const submit=entry?.querySelector<HTMLButtonElement>('button[type=submit]');
+    const notice=layer.querySelector<HTMLElement>('[data-status]');
+    if(submit)submit.disabled=true;
+    if(entry && notice)notice.textContent=action==='create'?'Creating your lobby…':'Joining the lobby…';
+    const controller=new AbortController();
+    const timeout=window.setTimeout(()=>controller.abort(),15000);
     try{
-      const response=await fetch('/api/rooms'+(code?'/'+encodeURIComponent(code):''),{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,rev:room?.rev,...extra})});
-      const data=await response.json();
+      const response=await fetch('/api/rooms'+(code?'/'+encodeURIComponent(code):''),{signal:controller.signal,method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,rev:room?.rev,...extra})});
+      const data=await response.json().catch(()=>{throw new Error('The lobby server is unavailable. Please try again.');});
       if(!response.ok)throw new Error(data.error||'Connection interrupted.');
       if(!running)return;
       const before=room;room=data as Room;code=room.id;
@@ -54,9 +62,9 @@ export function openOnline(o:Options){
       }
       updateClock();
     }catch(e){
-      error=e instanceof Error?e.message:'Reconnecting…';
+      error=controller.signal.aborted?'The lobby server took too long. Please try again.':e instanceof Error?e.message:'Connection interrupted.';
       const status=layer.querySelector('[data-status]');if(status)status.textContent=error;
-    }finally{pending=false;}
+    }finally{clearTimeout(timeout);pending=false;if(submit)submit.disabled=false;}
   }
   function updateClock(){
     if(!room?.game||room.game.phase==='over')return;
@@ -65,20 +73,22 @@ export function openOnline(o:Options){
     if(q&&room.questionEnd)q.textContent=Math.max(0,Math.ceil((room.questionEnd-Date.now()-offset)/1000))+'s';
   }
   const status=()=>'<p role="status" data-status>'+esc(error)+'</p>';
+  let joining=Boolean(code), draftName='', draftColor='';
   function draw(){
     if(!room){
-      layer.innerHTML=`<section class="screen setup"><h1>${code?'Join the crew':'Online crew'}</h1><form data-join>
-      <label>Your name <input name="name" maxlength="18" required autocomplete="nickname"></label>
-      <label>Avatar <select name="color">${CREW.map(m=>`<option value="${m.color}">${m.name}</option>`).join('')}</select></label>
-      <label>Room code <input name="code" maxlength="8" placeholder="Leave empty to host" value="${esc(code)}"></label>
-      <button class="btn-primary">Enter room</button></form>${status()}<button data-online="leave" class="btn-secondary">Back</button></section>`;
+      layer.innerHTML=`<section class="screen setup"><h1>${joining?'Join a lobby':'Create a lobby'}</h1>
+      <nav class="setup-tabs" aria-label="Lobby mode"><button type="button" class="chip" aria-pressed="${!joining}" data-online="host">Host</button><button type="button" class="chip" aria-pressed="${joining}" data-online="join-mode">Join</button></nav><form data-join>
+      <label>Your name <input name="name" maxlength="18" required autocomplete="nickname" value="${esc(draftName)}"></label>
+      <label>Avatar <select name="color">${CREW.map(m=>`<option value="${m.color}" ${m.color===draftColor?'selected':''}>${m.name}</option>`).join('')}</select></label>
+      ${joining?`<label>Room code <input name="code" maxlength="8" required autocomplete="off" autocapitalize="characters" placeholder="Code from the host" value="${esc(code)}"></label>`:''}
+      <button class="btn-primary" type="submit">${joining?'Join lobby':'Create lobby'}</button></form>${status()}<button data-online="leave" class="btn-secondary">Back</button></section>`;
       return;
     }
     const me=room.seat,g=room.game;
     if(!g){
-      const link=location.origin+location.pathname+'?room='+code;
+      const invite=location.hostname==='shipahead.ashmaz.app'?code:location.origin+location.pathname+'?room='+code;
       layer.innerHTML=`<section class="screen setup"><h1>Ferry crew</h1><h2>Room ${esc(code)}</h2><p>Math · ${selectedBands(room.settings.schoolLevels??room.settings.schoolLevel).map(b=>SCHOOL_LABEL[b]).join(' + ')}</p>
-      <label>Invite link <input readonly value="${esc(link)}"></label><button class="btn-secondary" data-online="share">Share invite</button>
+      <label>Invitation <input readonly value="${esc(invite)}"></label><button class="btn-secondary" data-online="share">Share invite</button>
       <div class="list">${room.members.map((m,i)=>`<div>${avatar(m.color)} ${esc(m.name)}${i===0?' · Host':''}</div>`).join('')}</div>
       ${me===0?`<button class="btn-primary" data-online="start" ${room.members.length<2?'disabled':''}>Start race</button>`:'<p>Waiting for the host to start.</p>'}
       ${status()}<button class="btn-secondary" data-online="leave">Leave room</button></section>`;return;
@@ -103,16 +113,27 @@ export function openOnline(o:Options){
   layer.onsubmit=e=>{
     e.preventDefault();const form=e.target as HTMLFormElement;const data=new FormData(form);unlockAudio();
     if(form.hasAttribute('data-answer'))void send('answer',{value:String(data.get('response'))});
-    else{code=String(data.get('code')).trim().toUpperCase();token=localStorage.getItem('ship.room.'+code)||'';void send(code?'join':'create',{...o.settings,name:data.get('name'),color:data.get('color')});}
+    else{code=joining?String(data.get('code')||'').trim().toUpperCase():'';if(joining&&!code){const msg=layer.querySelector('[data-status]');if(msg)msg.textContent='Enter the code from your host.';return;}token=localStorage.getItem('ship.room.'+code)||'';void send(code?'join':'create',{...o.settings,name:data.get('name'),color:data.get('color')});}
   };
   layer.onclick=async e=>{
     const btn=(e.target as Element).closest<HTMLElement>('[data-online]');if(!btn)return;
     const action=btn.dataset.online!;
+    if(action==='host'||action==='join-mode'){
+      if(pending)return;
+      const form=layer.querySelector<HTMLFormElement>('[data-join]');
+      if(!form)return;
+      const values=new FormData(form);
+      draftName=String(values.get('name')||'');draftColor=String(values.get('color')||'');
+      code=String(values.get('code')||'').trim().toUpperCase();
+      joining=action==='join-mode';error='';draw();return;
+    }
     if(action==='leave')return leave();
     if(action==='view')return board.toggleView();
     if(action==='share'){
-      const url=location.href;
-      try{if(navigator.share)await navigator.share({title:'Join my Ship Ahead crew',url});else await navigator.clipboard.writeText(url);}
+      const text=location.hostname==='shipahead.ashmaz.app'
+        ? 'Open Ship Ahead → Play Online → Join and enter '+code
+        : location.href;
+      try{if(navigator.share)await navigator.share({title:'Join my Ship Ahead crew',text});else await navigator.clipboard.writeText(text);}
       catch{(layer.querySelector('input[readonly]') as HTMLInputElement)?.select();}
       return;
     }
