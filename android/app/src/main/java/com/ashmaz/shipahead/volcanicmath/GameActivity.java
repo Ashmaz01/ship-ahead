@@ -25,6 +25,7 @@ public final class GameActivity extends Activity {
             return insets;
         });
         game = new WebView(this);
+        game.getSettings().setUseWideViewPort(true);
         game.getSettings().setSupportZoom(false);
         game.getSettings().setBuiltInZoomControls(false);
         game.setOverScrollMode(WebView.OVER_SCROLL_NEVER);

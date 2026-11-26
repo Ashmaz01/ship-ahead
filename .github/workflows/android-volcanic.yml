@@ -67,6 +67,25 @@ jobs:
           opts=Options()
           opts.add_argument("--headless=new")
           with webdriver.Chrome(options=opts) as browser:
+              from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+              from functools import partial
+              from threading import Thread
+              from selenium.webdriver.common.by import By
+              from selenium.webdriver.support.ui import WebDriverWait
+              server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory="dist"))
+              Thread(target=server.serve_forever, daemon=True).start()
+              for width, height in [(320, 568), (360, 740), (412, 892)]:
+                  browser.execute_cdp_cmd("Emulation.setDeviceMetricsOverride", dict(width=width, height=height, deviceScaleFactor=3, mobile=True))
+                  browser.get(f"http://127.0.0.1:{server.server_port}/")
+                  WebDriverWait(browser, 30).until(lambda d: d.find_element(By.CSS_SELECTOR,"[data-local]")).click()
+                  assert browser.execute_script("""
+                    const viewport = visualViewport;
+                    return ['#stage','.setup h1','[data-act=start]'].every(sel=>{
+                      const box=document.querySelector(sel).getBoundingClientRect();
+                      return box.width>0 && box.left>=-1 && box.top>=-1 && box.right<=viewport.width+1 && box.bottom<=viewport.height+1;
+                    });
+                  """), (width,height)
+              server.shutdown()
               browser.get("https://shipahead.ashmaz.app/policy/")
               result=browser.execute_async_script("""
                 const done=arguments[0], base='/api/rooms';

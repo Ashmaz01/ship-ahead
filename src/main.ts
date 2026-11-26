@@ -78,14 +78,23 @@ const layer = document.getElementById('layer')!;
 const live = document.getElementById('live')!;
 
 function fit(): void {
-  const k = Math.min(window.innerWidth / VIEW.w, window.innerHeight / VIEW.h);
-  stage.style.transform = `translate(-50%, -50%) scale(${k})`;
+  const viewport = window.visualViewport;
+  const width = viewport?.width ?? document.documentElement.clientWidth;
+  const height = viewport?.height ?? document.documentElement.clientHeight;
+  if (!width || !height) return;
+  const scale = Math.min(width / VIEW.w, height / VIEW.h);
+  const x = (viewport?.offsetLeft ?? 0) + (width - VIEW.w * scale) / 2;
+  const y = (viewport?.offsetTop ?? 0) + (height - VIEW.h * scale) / 2;
+  stage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
 }
 window.addEventListener('resize', fit);
+window.addEventListener('pageshow', fit);
+window.visualViewport?.addEventListener('resize', fit);
+window.visualViewport?.addEventListener('scroll', fit);
 fit();
 
 const announce = (msg: string) => { live.textContent = msg; };
-const focusFirst = (sel = '[data-autofocus], button') => (layer.querySelector(sel) as HTMLElement | null)?.focus();
+const focusFirst = (sel = '[data-autofocus], button') => (layer.querySelector(sel) as HTMLElement | null)?.focus({preventScroll:true});
 
 let board: BoardScene;
 let state: GameState | null = null;
@@ -356,7 +365,7 @@ function showSetup(): void {
     save();
     const focusKey = `[data-act="${el.dataset.act}"]${v ? `[data-v="${v}"]` : ''}${el.dataset.i ? `[data-i="${i}"]` : ''}`;
     showSetup();
-    (layer.querySelector(focusKey) as HTMLElement | null)?.focus();
+    (layer.querySelector(focusKey) as HTMLElement | null)?.focus({preventScroll:true});
   };
   layer.oninput = (e) => {
     const el = e.target as HTMLInputElement;
@@ -689,7 +698,7 @@ function showHandoff(events: GameEvent[], first = false): void {
       }
       board.focusPlayer(next.id);
       renderHud();
-      (hud.querySelector('.btn-primary') as HTMLElement | null)?.focus();
+      (hud.querySelector('.btn-primary') as HTMLElement | null)?.focus({preventScroll:true});
     }
   };
   focusFirst();
